@@ -1,7 +1,7 @@
 import tkinter
 import cv2
 import PIL.Image, PIL.ImageTk
-import numpy as np
+import time
   
 class App:
     def __init__(self, window, window_title, video_source=0):
@@ -17,14 +17,8 @@ class App:
         self.canvas = tkinter.Canvas(window, width = self.vid.width, height = self.vid.height)
         self.canvas.pack()
    
-        self.btn_highPass=tkinter.Button(window, text="High Pass", width=50, command=self.highPass)
+        self.btn_highPass=tkinter.Button(window, text="High Pass", width=50, command=self.snapshot)
         self.btn_highPass.pack(anchor=tkinter.CENTER, expand=True)
-        self.btn_lowPass=tkinter.Button(window, text="Low Pass", width=50, command=self.lowPass)
-        self.btn_lowPass.pack(anchor=tkinter.CENTER, expand=True)
-        self.btn_sharp=tkinter.Button(window, text="Sharpning", width=50, command=self.sharp)
-        self.btn_sharp.pack(anchor=tkinter.CENTER, expand=True)
-        self.btn_ori=tkinter.Button(window, text="Original", width=50, command=self.original)
-        self.btn_ori.pack(anchor=tkinter.CENTER, expand=True)
        # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
         self.update()
@@ -32,30 +26,18 @@ class App:
         self.window.mainloop()
 
     def highPass(self):
-        self.mode=1
-    def lowPass(self):
-        self.mode=2
-    def sharp(self):
-        self.mode=3
-    def original(self):
-        self.mode=0
+        # Get a frame from the video source
+        ret, frame = self.vid.get_frame()
+        if ret:
+            self.mode=1
     def update(self):
          # Get a frame from the video source
         ret, frame = self.vid.get_frame()
         if (self.mode==1):
-            k=np.array([[0,-1,0],[-1,4,-1],[0,-1,0]])
-            res=cv2.filter2D(src=frame,ddepth=-1,kernel=k)
-        elif (self.mode==2):
-            k=np.array([[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]])
-            res=cv2.filter2D(src=frame,ddepth=-1,kernel=k)
-        elif (self.mode==3):
-            k=np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
-            res=cv2.filter2D(src=frame,ddepth=-1,kernel=k)
-        else:
-            res=frame
+            frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if ret:
-            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(res))
+            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
 
         self.window.after(self.delay, self.update)
