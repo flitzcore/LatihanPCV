@@ -18,14 +18,14 @@ while(True):
     bg = cv.resize(bg, (f_width,f_height), interpolation = cv.INTER_AREA)
     hsv = cv.cvtColor(videoCam, cv.COLOR_BGR2HSV)
 
-    g_sensitivity=cv.getTrackbarPos('g','result')
+    sensitivity=cv.getTrackbarPos('g','result')
    # b_sensitivity=cv.getTrackbarPos('b','result')
     
-    low_green=(105 - g_sensitivity, 100, 50)  
-    high_green= (105 + g_sensitivity, 255, 255)
+    low=(120 - sensitivity, 150, 0)  
+    high= (180 + sensitivity, 255, 255)
     #low_blue = (105-b_sensitivity,100,50)
     #high_blue = (105+b_sensitivity,255,255)
-    mask1= cv.inRange(hsv, low_green , high_green )
+    mask1= cv.inRange(hsv, low , high )
     #mask2= cv.inRange(hsv, low_blue , high_blue)
     mask1=cv.bitwise_not(mask1)
     #mask2=cv.bitwise_not(mask2)
